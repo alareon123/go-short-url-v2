@@ -44,8 +44,8 @@ func main() {
 
 	r := chi.NewRouter()
 
-	r.Post("/", urlShortHandler)
-	r.Get("/{id}", getURLHandler)
+	r.Method("POST", "/", app.RequestLogger(urlShortHandler))
+	r.Method("GET", "/", app.RequestLogger(getURLHandler))
 
 	http.ListenAndServe(config.AppServerURL, r)
 }
