@@ -14,6 +14,10 @@ type shortUrl struct {
 	Url string `json:"url"`
 }
 
+type resultUrl struct {
+	Result string `json:"result"`
+}
+
 func urlShortHandler(w http.ResponseWriter, r *http.Request) {
 	reqBodyBytes, _ := io.ReadAll(r.Body)
 
@@ -47,6 +51,7 @@ func getURLHandler(w http.ResponseWriter, r *http.Request) {
 func apiShortUrl(w http.ResponseWriter, r *http.Request) {
 
 	var shortUrlJson shortUrl
+	var resultJson resultUrl
 
 	if err := json.NewDecoder(r.Body).Decode(&shortUrlJson); err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
@@ -55,9 +60,13 @@ func apiShortUrl(w http.ResponseWriter, r *http.Request) {
 
 	shortUrlID := app.ShortURL(shortUrlJson.Url)
 
+	resultJson.Result = shortUrlID
+
+	jsonData, _ := json.Marshal(resultJson)
+
 	w.WriteHeader(http.StatusOK)
 	w.Header().Set("Content-Type", "application/json")
-	_, err := w.Write([]byte(shortUrlID))
+	_, err := w.Write(jsonData)
 	if err != nil {
 		log.Fatal("error while writing response")
 	}
