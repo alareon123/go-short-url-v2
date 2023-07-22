@@ -2,6 +2,7 @@ package main
 
 import (
 	"bytes"
+	"github.com/go-resty/resty/v2"
 	"github.com/stretchr/testify/assert"
 	"io"
 	"net/http"
@@ -46,6 +47,18 @@ func Test_urlShortHandler(t *testing.T) {
 				emptyBody:   true,
 			},
 		},
+		{
+			name: "positive api test",
+			want: struct {
+				contentType string
+				statusCode  int
+				emptyBody   bool
+			}{
+				contentType: "application/json",
+				statusCode:  200,
+				emptyBody:   false,
+			},
+		},
 	}
 
 	for _, tt := range tests {
@@ -61,6 +74,52 @@ func Test_urlShortHandler(t *testing.T) {
 
 			assert.Equal(t, tt.want.statusCode, result.StatusCode)
 			assert.Equal(t, tt.want.emptyBody, len(resultBodyBytes) == 0)
+		})
+	}
+}
+
+func Test_urlShortHandlerApi(t *testing.T) {
+	handler := http.HandlerFunc(apiShortUrl)
+	srv := httptest.NewServer(handler)
+	defer srv.Close()
+
+	type want struct {
+		contentType string
+		statusCode  int
+		respBody    string
+	}
+
+	tests := []struct {
+		name string
+		body string
+		want want
+	}{
+		{
+			name: "positive api test",
+			want: struct {
+				contentType string
+				statusCode  int
+				respBody    string
+			}{
+				contentType: "application/json",
+				statusCode:  200,
+				respBody:    "false",
+			},
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			req := resty.New().R()
+
+			req.Method = "POST"
+			req.Body = "{\n  \"url\": \"https://practicum.yandex.ru\"\n}"
+			req.URL = srv.URL
+			req.SetHeader("Content-Type", "application/json")
+
+			resp, err := req.Send()
+			assert.Empty(t, err)
+			assert.NotEmpty(t, resp.Body())
 		})
 	}
 }

@@ -1,6 +1,7 @@
 package main
 
 import (
+	"encoding/json"
 	"github.com/alareon123/go-short-url.git/internal/app"
 	"github.com/alareon123/go-short-url.git/internal/config"
 	"github.com/go-chi/chi/v5"
@@ -8,6 +9,10 @@ import (
 	"log"
 	"net/http"
 )
+
+type shortUrl struct {
+	Url string `json:"url"`
+}
 
 func urlShortHandler(w http.ResponseWriter, r *http.Request) {
 	reqBodyBytes, _ := io.ReadAll(r.Body)
@@ -39,6 +44,25 @@ func getURLHandler(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusTemporaryRedirect)
 }
 
+func apiShortUrl(w http.ResponseWriter, r *http.Request) {
+
+	var shortUrlJson shortUrl
+
+	if err := json.NewDecoder(r.Body).Decode(&shortUrlJson); err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	shortUrlID := app.ShortURL(shortUrlJson.Url)
+
+	w.WriteHeader(http.StatusOK)
+	w.Header().Set("Content-Type", "application/json")
+	_, err := w.Write([]byte(shortUrlID))
+	if err != nil {
+		log.Fatal("error while writing response")
+	}
+}
+
 func main() {
 	config.Init()
 
@@ -46,6 +70,7 @@ func main() {
 
 	r.Method("POST", "/", app.RequestLogger(urlShortHandler))
 	r.Method("GET", "/{id}", app.RequestLogger(getURLHandler))
+	r.Method("POST", "/api/shorten", app.RequestLogger(apiShortUrl))
 
 	http.ListenAndServe(config.AppServerURL, r)
 }

@@ -1,7 +1,6 @@
 package app
 
 import (
-	"fmt"
 	"github.com/alareon123/go-short-url.git/internal/config"
 )
 
@@ -18,9 +17,7 @@ func GetURLByID(shortURL string) string {
 }
 
 func storeURL(urlBase string, urlShort string) {
-	fmt.Printf("url %s stored with id %s", urlBase, urlShort)
 	urls[urlShort] = urlBase
-	fmt.Println(urls)
 }
 
 func getURL(urlShort string) string {
