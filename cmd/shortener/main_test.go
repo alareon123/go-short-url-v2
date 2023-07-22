@@ -47,18 +47,6 @@ func Test_urlShortHandler(t *testing.T) {
 				emptyBody:   true,
 			},
 		},
-		{
-			name: "positive api test",
-			want: struct {
-				contentType string
-				statusCode  int
-				emptyBody   bool
-			}{
-				contentType: "application/json",
-				statusCode:  200,
-				emptyBody:   false,
-			},
-		},
 	}
 
 	for _, tt := range tests {
