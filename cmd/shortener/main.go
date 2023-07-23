@@ -48,10 +48,10 @@ func getURLHandler(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusTemporaryRedirect)
 }
 
-func apiShortUrl(w http.ResponseWriter, r *http.Request) {
+func apiShortURL(w http.ResponseWriter, r *http.Request) {
 
 	var shortURLJson shortURL
-	var resultJson resultURL
+	var resultJSON resultURL
 
 	if err := json.NewDecoder(r.Body).Decode(&shortURLJson); err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
@@ -60,9 +60,9 @@ func apiShortUrl(w http.ResponseWriter, r *http.Request) {
 
 	shortURLID := app.ShortURL(shortURLJson.URL)
 
-	resultJson.Result = shortURLID
+	resultJSON.Result = shortURLID
 
-	jsonData, _ := json.Marshal(resultJson)
+	jsonData, _ := json.Marshal(resultJSON)
 
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
@@ -79,7 +79,7 @@ func main() {
 
 	r.Method("POST", "/", app.RequestLogger(urlShortHandler))
 	r.Method("GET", "/{id}", app.RequestLogger(getURLHandler))
-	r.Method("POST", "/api/shorten", app.RequestLogger(apiShortUrl))
+	r.Method("POST", "/api/shorten", app.RequestLogger(apiShortURL))
 
 	http.ListenAndServe(config.AppServerURL, r)
 }

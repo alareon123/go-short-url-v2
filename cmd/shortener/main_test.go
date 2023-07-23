@@ -67,7 +67,7 @@ func Test_urlShortHandler(t *testing.T) {
 }
 
 func Test_urlShortHandlerApi(t *testing.T) {
-	handler := http.HandlerFunc(apiShortUrl)
+	handler := http.HandlerFunc(apiShortURL)
 	srv := httptest.NewServer(handler)
 	defer srv.Close()
 
