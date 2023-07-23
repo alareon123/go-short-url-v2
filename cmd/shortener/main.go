@@ -10,11 +10,11 @@ import (
 	"net/http"
 )
 
-type shortUrl struct {
-	Url string `json:"url"`
+type shortURL struct {
+	URL string `json:"url"`
 }
 
-type resultUrl struct {
+type resultURL struct {
 	Result string `json:"result"`
 }
 
@@ -50,17 +50,17 @@ func getURLHandler(w http.ResponseWriter, r *http.Request) {
 
 func apiShortUrl(w http.ResponseWriter, r *http.Request) {
 
-	var shortUrlJson shortUrl
-	var resultJson resultUrl
+	var shortURLJson shortURL
+	var resultJson resultURL
 
-	if err := json.NewDecoder(r.Body).Decode(&shortUrlJson); err != nil {
+	if err := json.NewDecoder(r.Body).Decode(&shortURLJson); err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
 
-	shortUrlID := app.ShortURL(shortUrlJson.Url)
+	shortURLID := app.ShortURL(shortURLJson.URL)
 
-	resultJson.Result = shortUrlID
+	resultJson.Result = shortURLID
 
 	jsonData, _ := json.Marshal(resultJson)
 
