@@ -77,9 +77,15 @@ func main() {
 
 	r := chi.NewRouter()
 
-	r.Method("POST", "/", app.RequestLogger(urlShortHandler))
-	r.Method("GET", "/{id}", app.RequestLogger(getURLHandler))
-	r.Method("POST", "/api/shorten", app.RequestLogger(apiShortURL))
+	r.Method("POST", "/", middleware(urlShortHandler))
+	r.Method("GET", "/{id}", middleware(getURLHandler))
+	r.Method("POST", "/api/shorten", middleware(apiShortURL))
 
 	http.ListenAndServe(config.AppServerURL, r)
+}
+
+func middleware(h http.HandlerFunc) http.Handler {
+	loggedFunc := app.RequestLogger(h)
+	compressedFunc := app.GzipMiddleware(loggedFunc)
+	return compressedFunc
 }
