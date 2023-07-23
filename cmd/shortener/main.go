@@ -65,7 +65,7 @@ func apiShortURL(w http.ResponseWriter, r *http.Request) {
 	jsonData, _ := json.Marshal(resultJSON)
 
 	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(http.StatusOK)
+	w.WriteHeader(http.StatusCreated)
 	_, err := w.Write(jsonData)
 	if err != nil {
 		log.Fatal("error while writing response")
