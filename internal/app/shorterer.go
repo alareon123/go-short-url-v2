@@ -8,12 +8,12 @@ import (
 
 var urls = make(map[string]string)
 
-const fileName = "tmp/short-url-db.json"
+const FileName = "tmp/short-url-db.json"
 
 var baseUUID = 0
 
-func init() {
-	consumer, err := NewConsumer(fileName)
+func Init() {
+	consumer, err := NewConsumer(FileName)
 	if err != nil {
 		Logger.Fatal(err.Error())
 	}
@@ -42,7 +42,7 @@ func GetURLByID(shortURL string) string {
 func storeURL(urlBase string, urlShort string) {
 	baseUUID++
 	urls[urlShort] = urlBase
-	producer, err := NewProducer(fileName)
+	producer, err := NewProducer(FileName)
 	if err != nil {
 		Logger.Fatal(err.Error())
 	}

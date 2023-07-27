@@ -74,6 +74,7 @@ func apiShortURL(w http.ResponseWriter, r *http.Request) {
 
 func main() {
 	config.Init()
+	app.Init()
 
 	r := chi.NewRouter()
 

@@ -64,8 +64,7 @@ func NewConsumer(filename string) (*Consumer, error) {
 	}
 
 	return &Consumer{
-		file: file,
-		// создаём новый scanner
+		file:    file,
 		scanner: bufio.NewScanner(file),
 	}, nil
 }
