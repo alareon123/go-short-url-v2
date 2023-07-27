@@ -2,6 +2,7 @@ package main
 
 import (
 	"bytes"
+	"github.com/alareon123/go-short-url.git/internal/config"
 	"github.com/go-resty/resty/v2"
 	"github.com/stretchr/testify/assert"
 	"io"
@@ -50,6 +51,7 @@ func Test_urlShortHandler(t *testing.T) {
 	}
 
 	for _, tt := range tests {
+		config.FileStoragePath = "tmp/short-url-db.json"
 		t.Run(tt.name, func(t *testing.T) {
 			request, _ := http.NewRequest(http.MethodPost, "/", bytes.NewReader(tt.body))
 			w := httptest.NewRecorder()
