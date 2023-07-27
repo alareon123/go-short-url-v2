@@ -8,12 +8,10 @@ import (
 
 var urls = make(map[string]string)
 
-const FileName = "tmp/short-url-db.json"
-
 var baseUUID = 0
 
 func Init() {
-	consumer, err := NewConsumer(FileName)
+	consumer, err := NewConsumer(config.FileStoragePath)
 	if err != nil {
 		Logger.Fatal(err.Error())
 	}
@@ -24,7 +22,7 @@ func Init() {
 		if err == io.EOF || readEvent == nil {
 			break
 		}
-		urls[readEvent.ShortUrl] = readEvent.OriginalUrl
+		urls[readEvent.ShortURL] = readEvent.OriginalURL
 		baseUUID++
 	}
 }
@@ -42,15 +40,15 @@ func GetURLByID(shortURL string) string {
 func storeURL(urlBase string, urlShort string) {
 	baseUUID++
 	urls[urlShort] = urlBase
-	producer, err := NewProducer(FileName)
+	producer, err := NewProducer(config.FileStoragePath)
 	if err != nil {
 		Logger.Fatal(err.Error())
 	}
 	defer producer.CloseFile()
 	writeEvent := UrlEvent{
-		OriginalUrl: urlBase,
-		ShortUrl:    urlShort,
-		Uuid:        strconv.Itoa(baseUUID),
+		OriginalURL: urlBase,
+		ShortURL:    urlShort,
+		UUID:        strconv.Itoa(baseUUID),
 	}
 	err = producer.WriteEvent(&writeEvent)
 	if err != nil {
