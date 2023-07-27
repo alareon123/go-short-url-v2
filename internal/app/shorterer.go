@@ -45,7 +45,7 @@ func storeURL(urlBase string, urlShort string) {
 		Logger.Fatal(err.Error())
 	}
 	defer producer.CloseFile()
-	writeEvent := UrlEvent{
+	writeEvent := URLEVENT{
 		OriginalURL: urlBase,
 		ShortURL:    urlShort,
 		UUID:        strconv.Itoa(baseUUID),
