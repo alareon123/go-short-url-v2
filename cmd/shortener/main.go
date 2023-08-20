@@ -84,6 +84,7 @@ func dataBasePing(w http.ResponseWriter, r *http.Request) {
 	} else {
 		w.WriteHeader(http.StatusOK)
 	}
+
 }
 
 func initRouter() *chi.Mux {
