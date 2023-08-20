@@ -1,6 +1,7 @@
 package main
 
 import (
+	"context"
 	"encoding/json"
 	"github.com/alareon123/go-short-url.git/internal/app"
 	"github.com/alareon123/go-short-url.git/internal/config"
@@ -72,12 +73,26 @@ func apiShortURL(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+func dataBasePing(w http.ResponseWriter, r *http.Request) {
+	var connection *app.DBConnection
+	if config.DataBaseCredentials != "" {
+		connection = app.ConnectToDataBase(config.DataBaseCredentials)
+	}
+
+	err := connection.Conn.Ping(context.Background())
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+	}
+	w.WriteHeader(http.StatusOK)
+}
+
 func initRouter() *chi.Mux {
 	r := chi.NewRouter()
 
 	r.Method("POST", "/", middleware(urlShortHandler))
 	r.Method("GET", "/{id}", middleware(getURLHandler))
 	r.Method("POST", "/api/shorten", middleware(apiShortURL))
+	r.Method("GET", "/ping", middleware(dataBasePing))
 
 	return r
 }

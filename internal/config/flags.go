@@ -8,11 +8,13 @@ import (
 var AppServerURL string
 var BaseAddressURL string
 var FileStoragePath string
+var DataBaseCredentials string
 
 func Init() {
 	flag.StringVar(&AppServerURL, "a", ":8080", "address and port to run server")
 	flag.StringVar(&BaseAddressURL, "b", "http://localhost:8080", "base address for short urls")
 	flag.StringVar(&FileStoragePath, "f", "/tmp/short-url-db.json", "file storage path")
+	flag.StringVar(&DataBaseCredentials, "d", "", "database credentials")
 	flag.Parse()
 
 	if envAppURL := os.Getenv("SERVER_ADDRESS"); envAppURL != "" {
@@ -24,5 +26,9 @@ func Init() {
 	if envFileStoragePath := os.Getenv("FILE_STORAGE_PATH"); envFileStoragePath != "" {
 		FileStoragePath = envFileStoragePath
 	}
+	if envDataBaseCredentials := os.Getenv("DATABASE_DSN"); envDataBaseCredentials != "" {
+		DataBaseCredentials = envDataBaseCredentials
+	}
+
 	BaseAddressURL += "/"
 }
