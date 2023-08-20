@@ -1,6 +1,7 @@
 package main
 
 import (
+	"encoding/json"
 	"github.com/alareon123/go-short-url.git/internal/app"
 	"github.com/alareon123/go-short-url.git/internal/config"
 	"github.com/go-chi/chi/v5"
@@ -8,6 +9,14 @@ import (
 	"log"
 	"net/http"
 )
+
+type shortURL struct {
+	URL string `json:"url"`
+}
+
+type resultURL struct {
+	Result string `json:"result"`
+}
 
 func urlShortHandler(w http.ResponseWriter, r *http.Request) {
 	reqBodyBytes, _ := io.ReadAll(r.Body)
@@ -39,13 +48,49 @@ func getURLHandler(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusTemporaryRedirect)
 }
 
-func main() {
-	config.Init()
+func apiShortURL(w http.ResponseWriter, r *http.Request) {
 
+	var shortURLJson shortURL
+	var resultJSON resultURL
+
+	if err := json.NewDecoder(r.Body).Decode(&shortURLJson); err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	shortURLID := app.ShortURL(shortURLJson.URL)
+
+	resultJSON.Result = shortURLID
+
+	jsonData, _ := json.Marshal(resultJSON)
+
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusCreated)
+	_, err := w.Write(jsonData)
+	if err != nil {
+		log.Fatal("error while writing response")
+	}
+}
+
+func initRouter() *chi.Mux {
 	r := chi.NewRouter()
 
-	r.Post("/", urlShortHandler)
-	r.Get("/{id}", getURLHandler)
+	r.Method("POST", "/", middleware(urlShortHandler))
+	r.Method("GET", "/{id}", middleware(getURLHandler))
+	r.Method("POST", "/api/shorten", middleware(apiShortURL))
 
-	http.ListenAndServe(config.AppServerURL, r)
+	return r
+}
+
+func main() {
+	config.Init()
+	app.Init()
+
+	http.ListenAndServe(config.AppServerURL, initRouter())
+}
+
+func middleware(h http.HandlerFunc) http.Handler {
+	loggedFunc := app.RequestLogger(h)
+	compressedFunc := app.GzipMiddleware(loggedFunc)
+	return compressedFunc
 }
