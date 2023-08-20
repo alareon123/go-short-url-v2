@@ -7,7 +7,7 @@ import (
 	"os"
 )
 
-type UrlEvent struct {
+type URLEvent struct {
 	UUID        string `json:"uuid"`
 	ShortURL    string `json:"short_url"`
 	OriginalURL string `json:"original_url"`
@@ -39,7 +39,7 @@ func (p *Producer) CloseFile() error {
 	return p.file.Close()
 }
 
-func (p *Producer) WriteEvent(event *UrlEvent) error {
+func (p *Producer) WriteEvent(event *URLEvent) error {
 	data, err := json.Marshal(event)
 	if err != nil {
 		return err
@@ -69,13 +69,13 @@ func NewConsumer(filename string) (*Consumer, error) {
 	}, nil
 }
 
-func (c *Consumer) ReadEvent() (*UrlEvent, error) {
+func (c *Consumer) ReadEvent() (*URLEvent, error) {
 	if !c.scanner.Scan() {
 		return nil, c.scanner.Err()
 	}
 	data := c.scanner.Bytes()
 
-	event := UrlEvent{}
+	event := URLEvent{}
 	err := json.Unmarshal(data, &event)
 	if err != nil {
 		return nil, err
