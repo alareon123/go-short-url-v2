@@ -72,17 +72,21 @@ func apiShortURL(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func main() {
-	config.Init()
-	app.Init()
-
+func initRouter() *chi.Mux {
 	r := chi.NewRouter()
 
 	r.Method("POST", "/", middleware(urlShortHandler))
 	r.Method("GET", "/{id}", middleware(getURLHandler))
 	r.Method("POST", "/api/shorten", middleware(apiShortURL))
 
-	http.ListenAndServe(config.AppServerURL, r)
+	return r
+}
+
+func main() {
+	config.Init()
+	app.Init()
+
+	http.ListenAndServe(config.AppServerURL, initRouter())
 }
 
 func middleware(h http.HandlerFunc) http.Handler {
