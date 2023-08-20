@@ -72,12 +72,18 @@ func apiShortURL(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+func dataBasePing(w http.ResponseWriter, r *http.Request) {
+	w.WriteHeader(200)
+	w.Write([]byte("kek"))
+}
+
 func initRouter() *chi.Mux {
 	r := chi.NewRouter()
 
 	r.Method("POST", "/", middleware(urlShortHandler))
 	r.Method("GET", "/{id}", middleware(getURLHandler))
 	r.Method("POST", "/api/shorten", middleware(apiShortURL))
+	r.Method("GET", "/ping", middleware(dataBasePing))
 
 	return r
 }
