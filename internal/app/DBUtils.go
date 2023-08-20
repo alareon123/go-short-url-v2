@@ -1,21 +1,22 @@
 package app
 
 import (
-	"database/sql"
+	"context"
+	"github.com/jackc/pgx/v5"
 )
 
 type DBConnection struct {
-	Db *sql.DB
+	Conn *pgx.Conn
 }
 
 func ConnectToDataBase(credentials string) *DBConnection {
-	db, err := sql.Open("pgx", credentials)
+	conn, err := pgx.Connect(context.Background(), credentials)
 	if err != nil {
-		Logger.Fatal("error happened while opening connection to db")
+		Logger.Fatal(err.Error())
 	}
 
 	dbConnection := DBConnection{
-		Db: db,
+		Conn: conn,
 	}
 
 	return &dbConnection

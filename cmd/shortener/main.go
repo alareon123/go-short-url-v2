@@ -1,6 +1,7 @@
 package main
 
 import (
+	"context"
 	"encoding/json"
 	"github.com/alareon123/go-short-url.git/internal/app"
 	"github.com/alareon123/go-short-url.git/internal/config"
@@ -78,14 +79,11 @@ func dataBasePing(w http.ResponseWriter, r *http.Request) {
 		connection = app.ConnectToDataBase(config.DataBaseCredentials)
 	}
 
-	err := connection.Db.Ping()
+	err := connection.Conn.Ping(context.Background())
 	if err != nil {
-		app.Logger.Info(config.DataBaseCredentials)
 		w.WriteHeader(http.StatusInternalServerError)
-	} else {
-		w.WriteHeader(http.StatusOK)
 	}
-
+	w.WriteHeader(http.StatusOK)
 }
 
 func initRouter() *chi.Mux {
