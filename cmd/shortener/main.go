@@ -73,8 +73,17 @@ func apiShortURL(w http.ResponseWriter, r *http.Request) {
 }
 
 func dataBasePing(w http.ResponseWriter, r *http.Request) {
-	w.WriteHeader(200)
-	w.Write([]byte("kek"))
+	var connection *app.DBConnection
+	if config.DataBaseCredentials != "" {
+		connection = app.ConnectToDataBase(config.DataBaseCredentials)
+	}
+
+	err := connection.Db.Ping()
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+	} else {
+		w.WriteHeader(http.StatusOK)
+	}
 }
 
 func initRouter() *chi.Mux {
