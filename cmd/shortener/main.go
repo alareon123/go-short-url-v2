@@ -80,6 +80,7 @@ func dataBasePing(w http.ResponseWriter, r *http.Request) {
 
 	err := connection.Db.Ping()
 	if err != nil {
+		app.Logger.Info(config.DataBaseCredentials)
 		w.WriteHeader(http.StatusInternalServerError)
 	} else {
 		w.WriteHeader(http.StatusOK)
